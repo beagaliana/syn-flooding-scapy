@@ -34,11 +34,14 @@
 
 \documentclass[11pt]{article}
 
+\usepackage{imakeidx}
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
 
 \usepackage{mathpazo} % Palatino font
 
+
+\makeindex[columns=3, title=Alphabetical Index, intoc]
 \begin{document}
 
 %----------------------------------------------------------------------------------------
@@ -98,6 +101,52 @@
 	
 \end{titlepage}
 
+
+\tableofcontents
+\clearpage
+
 %----------------------------------------------------------------------------------------
 
+\section{Introduction}\index{Index}
+
+\clearpage
+
+\section{SYN Flood attack}\index{Index}
+
+\clearpage
+
+\section{Why using Scapy}\index{Index}
+
+
+\clearpage
+
+\section{Implementation details of the attack}\index{Index}
+
+
+\clearpage
+
+\section{Virtual machines' deployment}\index{Index}
+
+
+\clearpage
+
+\section{Why using iptables to prevent it}\index{Index}
+
+
+\clearpage
+
+\section{Implementation details of the prevention}\index{Index}
+
+
+\clearpage
+
+\section{Conclusion}\index{Index}
+
+
+\clearpage
+
+\section{References and bibliography}\index{Index}
+
+%----------------------------------------------------------------------------------------
+\printindex
 \end{document}
