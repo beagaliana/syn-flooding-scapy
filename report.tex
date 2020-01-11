@@ -104,8 +104,10 @@ For a TCP connection to be established this three-way handshake needs to be perf
 
 The SYN flooding attack is based in the way the three-way handshake that begins a TCP connection works.
 
+\begin{center}
 \vfill\vfill
-\vfill\includegraphics[width=0.5\textwidth]{3wayhandshake.png}\\[1cm]
+\includegraphics[width=0.5\textwidth]{3wayhandshake.png}\\[1cm]
+\end{center}
 
 \section{SYN Flood attack}\index{Index}
 A SYN flood attack is a form of denial of service attack in which the attacker, by getting advantage of the TCP three-way handshake, sends a succession of SYN requests to a target server attempting to consume enough resources in order to make it unavailable for answering other legitimate petitions.\vspace{5mm}
@@ -114,14 +116,23 @@ The aim of this report is to explain the technical details as well as the proced
 
 Here is a view of the message flow during a TCP 3-way handshake while performing a SYN flood attack:
 
-\vfill\vfill
+\begin{center}
+\vfill
 \includegraphics[width=0.5\textwidth]{tcp-synflood.png}\\[1cm]
+\end{center}
 
 \clearpage
 
 \section{Why using Scapy}\index{Index}
+Scapy is a powerful interactive packet manipulation tool written in Python that allows us to end, sniff and dissect network packets. It is able to forge or decode packets of a wide number of protocols, send them on the wire, capture them, match requests and replies, among other things. It can easily handle most classical tasks like scanning, tracerouting, probing, unit tests, attacks or network discovery.\vspace{5mm}
 
+What's special about Scapy? It does not interpret, it decodes.\vspace{5mm}
 
+Machines are good at decoding and can sometimes help human with that. Interpretation is reserved for human beings. Some programs try to mimic this behavior. For instance they say “this port is open” instead of “I received a SYN-ACK”. Sometimes they are right. Sometimes they are not. It might be easier for beginners, but when you know what you’re doing, you keep on trying to deduce what really happened from the program’s interpretation to make your own, which is hard because you lost a big amount of information.\vspace{5mm}
+
+Moreover, with most other networking tools, you won’t build something the author did not imagine. These tools have been built for a specific goal and can’t deviate much from it. Scapy tries to overcome those problems. It enables you to build exactly the packets you want. Even if I think stacking a 802.1q layer on top of TCP has no sense, it may have some for somebody else working on some product I don’t know. Scapy has a flexible model that tries to avoid such arbitrary limits. You’re free to put any value you want in any field you want and stack them like you want. You’re the adult after all.\vspace{5mm}
+
+In this report, we will be taking advantage of that freedom Scapy offers to craft malformed packets that will be sent to the target server. Since it is written in Python, we will write really simple Python scripts using Scapy as a library to achieve that.
 \clearpage
 
 \section{Implementation details of the attack}\index{Index}
@@ -155,6 +166,7 @@ Here is a view of the message flow during a TCP 3-way handshake while performing
 \url{https://resources.sei.cmu.edu/asset_files/WhitePaper/1996_019_001_496172.pdf#page=123}\break
 \url{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.206.5378&rep=rep1&type=pdf}\break
 \url{https://en.wikipedia.org/wiki/SYN_flood}\break
+\url{https://scapy.readthedocs.io/en/latest/introduction.html#about-scapy}\break
 
 
 %----------------------------------------------------------------------------------------
