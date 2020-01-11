@@ -12,20 +12,6 @@
 %
 % License:
 % CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
-% 
-% Instructions for using this template:
-% This title page is capable of being compiled as is. This is not useful for 
-% including it in another document. To do this, you have two options: 
-%
-% 1) Copy/paste everything between \begin{document} and \end{document} 
-% starting at \begin{titlepage} and paste this into another LaTeX file where you 
-% want your title page.
-% OR
-% 2) Remove everything outside the \begin{titlepage} and \end{titlepage}, rename
-% this file and move it to the same directory as the LaTeX file you wish to add it to. 
-% Then add \input{./<new filename>.tex} to your LaTeX file where you want your
-% title page.
-%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %----------------------------------------------------------------------------------------
@@ -34,6 +20,7 @@
 
 \documentclass[11pt]{article}
 
+\usepackage{graphicx}
 \usepackage{imakeidx}
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
@@ -41,7 +28,7 @@
 \usepackage{mathpazo} % Palatino font
 
 
-\makeindex[columns=3, title=Alphabetical Index, intoc]
+\makeindex[columns=3, intoc]
 \begin{document}
 
 %----------------------------------------------------------------------------------------
@@ -92,8 +79,8 @@
 	%	Logo
 	%------------------------------------------------
 	
-	%\vfill\vfill
-	%\includegraphics[width=0.2\textwidth]{placeholder.jpg}\\[1cm] % Include a department/university logo - this will require the graphicx package
+	\vfill\vfill
+	\includegraphics[width=0.2\textwidth]{agh-logo.png}\\[1cm] % Include a department/university logo - this will require the graphicx package
 	 
 	%----------------------------------------------------------------------------------------
 	
@@ -107,11 +94,27 @@
 
 %----------------------------------------------------------------------------------------
 
-\section{Introduction}\index{Index}
+\section{Introduction to DoS attacks and TCP/IP connections}\index{Index}
+Servers have become the target to many attacks. Some of these try to stop, temporarily or indefinitely, legitimate clients from accessing to the resources provided by the server, these kind of attacks are known as denial of service attacks (DoS). Denial of service may be indistinguishable from a heavy, but legitimate, load on the network: users might have difficulties connecting to the web site simply because too many people are trying to connect simutaneously.\vspace{5mm}
 
-\clearpage
+The Transmission Control Protocol (TCP) is one of the main protocols of the Internet protocol suite. It complemented the Internet Protocol (IP) in the initial network implementation so that is why the entire suite is commonly referred to as TCP/IP. TCP operates at a higher level than IP (which takes care of lower-level transmissions from host to host using the IP addresses). TCP provides reliable, ordered, and error-checked delivery of a stream of bytes between applications running on hosts that are communicating using an IP network.\vspace{5mm}
+
+For a TCP connection to be established this three-way handshake needs to be performed between the client and the server. The client system begins the handshake by sending a SYN message to the server. The server then acknowledges the SYN message by sending SYN-ACK message to the client. The client then finishes establishing the connection by responding with an ACK message. The connection between the client and the server is then open, and data can be exchanged between them.\vspace{5mm}
+
+The SYN flooding attack is based in the way the three-way handshake that begins a TCP connection works.
+
+\vfill\vfill
+\vfill\includegraphics[width=0.5\textwidth]{3wayhandshake.png}\\[1cm]
 
 \section{SYN Flood attack}\index{Index}
+A SYN flood attack is a form of denial of service attack in which the attacker, by getting advantage of the TCP three-way handshake, sends a succession of SYN requests to a target server attempting to consume enough resources in order to make it unavailable for answering other legitimate petitions.\vspace{5mm}
+
+The aim of this report is to explain the technical details as well as the procedure followed in order to perform a SYN flood attack implemented with Python and Scapy using VirtualBox machines.\vspace{5mm}
+
+Here is a view of the message flow during a TCP 3-way handshake while performing a SYN flood attack:
+
+\vfill\vfill
+\includegraphics[width=0.5\textwidth]{tcp-synflood.png}\\[1cm]
 
 \clearpage
 
