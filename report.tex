@@ -20,6 +20,7 @@
 
 \documentclass[11pt]{article}
 
+\usepackage{listings}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{imakeidx}
@@ -28,6 +29,28 @@
 
 \usepackage{mathpazo} % Palatino font
 
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
 
 \makeindex[columns=3, intoc]
 \begin{document}
@@ -95,7 +118,7 @@
 
 %----------------------------------------------------------------------------------------
 
-\section{Introduction to DoS attacks and TCP/IP connections}\index{Index}
+\section{Introduction to DoS attacks and TCP/IP connections}\index{}
 Servers have become the target to many attacks. Some of these try to stop, temporarily or indefinitely, legitimate clients from accessing to the resources provided by the server, these kind of attacks are known as denial of service attacks (DoS). Denial of service may be indistinguishable from a heavy, but legitimate, load on the network: users might have difficulties connecting to the web site simply because too many people are trying to connect simutaneously.\vspace{5mm}
 
 The Transmission Control Protocol (TCP) is one of the main protocols of the Internet protocol suite. It complemented the Internet Protocol (IP) in the initial network implementation so that is why the entire suite is commonly referred to as TCP/IP. TCP operates at a higher level than IP (which takes care of lower-level transmissions from host to host using the IP addresses). TCP provides reliable, ordered, and error-checked delivery of a stream of bytes between applications running on hosts that are communicating using an IP network.\vspace{5mm}
@@ -109,7 +132,7 @@ The SYN flooding attack is based in the way the three-way handshake that begins 
 \includegraphics[width=0.5\textwidth]{3wayhandshake.png}\\[1cm]
 \end{center}
 
-\section{SYN Flood attack}\index{Index}
+\section{SYN Flood attack}\index{}
 A SYN flood attack is a form of denial of service attack in which the attacker, by taking advantage of the TCP three-way handshake, sends a succession of SYN requests to a target server attempting to consume enough resources in order to make it unavailable for answering other legitimate petitions.\vspace{5mm}
 
 The attack starts when the client sends a SYN packet to open the connection. Then the target server will reply with an SYN-ACK and waits for the ACK of the client to establish the connection. This ACK will never come: the attacker can either simply not respond with the expected ACK or it could have sent an spoofed IP address that corresponds to a client that does not exist (ergo will never answer with the ACK packet). This will create a number of half-open connections on the target server as the connection is kept open, in a “SYN\_RECV” state, which will eventually consume the target server's resources.\vspace{5mm}
@@ -125,51 +148,70 @@ Here is a view of the message flow during a TCP 3-way handshake while performing
 
 \clearpage
 
-\section{Why using Scapy}\index{Index}
+\section{Why using Scapy}\index{}
 Scapy is a powerful interactive packet manipulation tool written in Python that allows us to end, sniff and dissect network packets. It is able to forge or decode packets of a wide number of protocols, send them on the wire, capture them, match requests and replies, among other things. It can easily handle most classical tasks like scanning, tracerouting, probing, unit tests, attacks or network discovery.\vspace{5mm}
 
 What's special about Scapy? It does not interpret, it decodes.\vspace{5mm}
 
-Machines are good at decoding and can sometimes help human with that. Interpretation is reserved for human beings. Some programs try to mimic this behavior. For instance they say “this port is open” instead of “I received a SYN-ACK”. Sometimes they are right. Sometimes they are not. It might be easier for beginners, but when you know what you’re doing, you keep on trying to deduce what really happened from the program’s interpretation to make your own, which is hard because you lost a big amount of information.\vspace{5mm}
+Machines are good at decoding and can sometimes help humans with that. Interpretation is reserved for human beings. Some programs try to mimic this behavior. For instance they say “this port is open” instead of “I received a SYN-ACK”. Sometimes they are right. Sometimes they are not. It might be easier for beginners, but when you know what you’re doing, you keep on trying to deduce what really happened from the program’s interpretation to make your own, which is hard because you lost a big amount of information.\vspace{5mm}
 
 Moreover, with most other networking tools, you won’t build something the author did not imagine. These tools have been built for a specific goal and can’t deviate much from it. Scapy tries to overcome those problems. It enables you to build exactly the packets you want. You’re free to put any value you want in any field you want and stack them like you want. You’re the adult after all.\vspace{5mm}
 
 In this report, we will be taking advantage of that freedom Scapy offers to craft malformed packets that will be sent to the target server. Since it is written in Python, we will write really simple Python scripts using Scapy as a library to achieve that.
 \clearpage
 
-\section{Implementation details of the attack}\index{Index}
+\section{Implementation details of the attack}\index{}
+In order to perform the attack, we will create a Python script which will generate several SYN packets using Scapy. This script will be executed in two VirtualBox machines that will be attackers and will be sent to another VM that will work as our target server.\vspace{5mm}
+
+For the attack to be successful we also need to modify an iptables rule that will apply to the kernel, so it will not interfere with our Scapy application. This rule will drop all packages that have RST flag. The reason this needs to be done is because the kernel will send RST responses (resets) to the target when it sees the packets that are being sent with Scapy, since the kernel didn’t initiate this TCP communication. Using this iptables rule, the kernel’s RSTs will not get to the target.\vspace{5mm}
+
+\section{Virtual machines' deployment}\index{}
+As it has been mentioned before, we will create three virtual machines using VirtualBox, two of them will be attackers and the other will perform the victim's role. They will run Ubuntu Server 18.04.3 and the victim will have an apache server running on port 80.\vspace{5mm}
+
+The machines will be connected through the VirtualBox “Hostonly” network adapter. By using this method, VirtualBox creates virtual adapters for connections and doesn't try to use a physical network adapter. This setup requires creating a host-only adapter (if none exists).
+
+\section{Description of the SYN flooding script}\index{}
+This script is based on the original created by \href{https://github.com/subodhp}{Subodh Pachghare} in which the VM attacker sends malformed SYN connection packets to the target:\vspace{5mm}
+
+\begin{lstlisting}
+
+#! /usr/bin/env python
+# Name : Subodh Pachghare
+# CyberSpace Name : HaX0R (Cyberninja)
+# Website : www.thesubodh.com
+# Description : SYN Flood Packet creation for iptables prevention solution
+import sys
+from scapy.all import *
+#conf.verb=0
+print "Field Values of packet sent"
+p=IP(dst=sys.argv[1],id=1111,ttl=99)/TCP(sport=RandShort(),dport=[22,80],seq=12345,ack=1000,window=1000,flags="S")/"HaX0r SVP"
+ls(p)
+print "Sending Packets in 0.3 second intervals for timeout of 4 sec"
+ans,unans=srloop(p,inter=0.3,retry=2,timeout=4)
+print "Summary of answered & unanswered packets"
+ans.summary()
+unans.summary()
+print "source port flags in response"
+#for s,r in ans:
+# print r.sprintf("%TCP.sport% \t %TCP.flags%")
+ans.make\_table(lambda(s,r): (s.dst, s.dport, r.sprintf("%IP.id% \t %IP.ttl% \t %TCP.flags%")))
+
+\end{lstlisting}
+
+\section{Conclusion}\index{}
 
 
 \clearpage
 
-\section{Virtual machines' deployment}\index{Index}
+\section{References and bibliography}\index{}
 
-
-\clearpage
-
-\section{Why using iptables to prevent it}\index{Index}
-
-
-\clearpage
-
-\section{Implementation details of the prevention}\index{Index}
-
-
-\clearpage
-
-\section{Conclusion}\index{Index}
-
-
-\clearpage
-
-\section{References and bibliography}\index{Index}
-
-\url{https://www.owasp.org/index.php/Denial_of_Service}\break
-\url{https://resources.sei.cmu.edu/asset_files/WhitePaper/1996_019_001_496172.pdf#page=123}\break
+\url{https://www.owasp.org/index.php/Denial\_of\_Service}\break
+\url{https://resources.sei.cmu.edu/asset\_files/WhitePaper/1996\_019\_001\_496172.pdf#page=123}\break
 \url{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.206.5378&rep=rep1&type=pdf}\break
-\url{https://en.wikipedia.org/wiki/SYN_flood}\break
+\url{https://en.wikipedia.org/wiki/SYN\_flood}\break
 \url{https://scapy.readthedocs.io/en/latest/introduction.html#about-scapy}\break
-
+\url{https://www.virtualbox.org/manual/ch06.html#network\_hostonly}\break
+\url{https://condor.depaul.edu/glancast/443class/docs/vbox\_host-only\_setup.html}\break
 
 %----------------------------------------------------------------------------------------
 \printindex
