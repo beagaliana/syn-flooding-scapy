@@ -110,7 +110,9 @@ The SYN flooding attack is based in the way the three-way handshake that begins 
 \end{center}
 
 \section{SYN Flood attack}\index{Index}
-A SYN flood attack is a form of denial of service attack in which the attacker, by getting advantage of the TCP three-way handshake, sends a succession of SYN requests to a target server attempting to consume enough resources in order to make it unavailable for answering other legitimate petitions.\vspace{5mm}
+A SYN flood attack is a form of denial of service attack in which the attacker, by taking advantage of the TCP three-way handshake, sends a succession of SYN requests to a target server attempting to consume enough resources in order to make it unavailable for answering other legitimate petitions.\vspace{5mm}
+
+The attack starts when the client sends a SYN packet to open the connection. Then the target server will reply with an SYN-ACK and waits for the ACK of the client to establish the connection. This ACK will never come: the attacker can either simply not respond with the expected ACK or it could have sent an spoofed IP address that corresponds to a client that does not exist (ergo will never answer with the ACK packet). This will create a number of half-open connections on the target server as the connection is kept open, in a “SYN\_RECV” state, which will eventually consume the target server's resources.\vspace{5mm}
 
 The aim of this report is to explain the technical details as well as the procedure followed in order to perform a SYN flood attack implemented with Python and Scapy using VirtualBox machines.\vspace{5mm}
 
@@ -118,7 +120,7 @@ Here is a view of the message flow during a TCP 3-way handshake while performing
 
 \begin{center}
 \vfill
-\includegraphics[width=0.5\textwidth]{tcp-synflood.png}\\[1cm]
+\includegraphics[width=0.4\textwidth]{tcp-synflood.png}\\[1cm]
 \end{center}
 
 \clearpage
@@ -130,7 +132,7 @@ What's special about Scapy? It does not interpret, it decodes.\vspace{5mm}
 
 Machines are good at decoding and can sometimes help human with that. Interpretation is reserved for human beings. Some programs try to mimic this behavior. For instance they say “this port is open” instead of “I received a SYN-ACK”. Sometimes they are right. Sometimes they are not. It might be easier for beginners, but when you know what you’re doing, you keep on trying to deduce what really happened from the program’s interpretation to make your own, which is hard because you lost a big amount of information.\vspace{5mm}
 
-Moreover, with most other networking tools, you won’t build something the author did not imagine. These tools have been built for a specific goal and can’t deviate much from it. Scapy tries to overcome those problems. It enables you to build exactly the packets you want. Even if I think stacking a 802.1q layer on top of TCP has no sense, it may have some for somebody else working on some product I don’t know. Scapy has a flexible model that tries to avoid such arbitrary limits. You’re free to put any value you want in any field you want and stack them like you want. You’re the adult after all.\vspace{5mm}
+Moreover, with most other networking tools, you won’t build something the author did not imagine. These tools have been built for a specific goal and can’t deviate much from it. Scapy tries to overcome those problems. It enables you to build exactly the packets you want. You’re free to put any value you want in any field you want and stack them like you want. You’re the adult after all.\vspace{5mm}
 
 In this report, we will be taking advantage of that freedom Scapy offers to craft malformed packets that will be sent to the target server. Since it is written in Python, we will write really simple Python scripts using Scapy as a library to achieve that.
 \clearpage
