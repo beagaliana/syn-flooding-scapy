@@ -149,9 +149,9 @@ Here is a view of the message flow during a TCP 3-way handshake while performing
 \clearpage
 
 \section{Why using Scapy}
-Scapy is a powerful interactive packet manipulation tool written in Python that allows us to end, sniff and dissect network packets. It is able to forge or decode packets of a wide number of protocols, send them on the wire, capture them, match requests and replies, among other things. It can easily handle most classical tasks like scanning, tracerouting, probing, unit tests, attacks or network discovery.\vspace{5mm}
+\href{https://scapy.net}{Scapy} is a powerful interactive packet manipulation tool written in Python that allows us to end, sniff and dissect network packets. It is able to forge or decode packets of a wide number of protocols, send them on the wire, capture them, match requests and replies, among other things. It can easily handle most classical tasks like scanning, tracerouting, probing, unit tests, attacks or network discovery.\vspace{5mm}
 
-What's special about Scapy? It does not interpret, it decodes.\vspace{5mm}
+\textbf{What's special about Scapy?} It does not interpret, it decodes.\vspace{5mm}
 
 Machines are good at decoding and can sometimes help humans with that. Interpretation is reserved for human beings. Some programs try to mimic this behavior. For instance they say “this port is open” instead of “I received a SYN-ACK”. Sometimes they are right. Sometimes they are not. It might be easier for beginners, but when you know what you’re doing, you keep on trying to deduce what really happened from the program’s interpretation to make your own, which is hard because you lost a big amount of information.\vspace{5mm}
 
@@ -163,10 +163,14 @@ In this report, we will be taking advantage of that freedom Scapy offers to craf
 \section{Implementation details of the attack}
 In order to perform the attack, we will create a Python script which will generate several SYN packets using Scapy. This script will be executed in two VirtualBox machines that will be attackers and will be sent to another VM that will work as our target server.\vspace{5mm}
 
-\subsection{iptables rules}
-iptables is a Linux native firewall which comes pre-installed with most distributions. It is the userspace command line program used to configure the Linux 2.4.x and later packet filtering ruleset. It is usually targeted towards system administrators.\vspace{5mm}
+\subsection{\textbf{\texttt{\ttfamily{iptables}}} rules}
+\texttt{\ttfamily{iptables}} is a Linux native firewall which comes pre-installed with most distributions. It is the userspace command line program used to configure the Linux 2.4.x and later packet filtering ruleset. It is usually targeted towards system administrators.\vspace{5mm}
 
-For the attack to be successful we also need to modify an iptables rule that will only apply to the kernel, so it will not interfere with our Scapy application (as this happens in the application layer). This rule will drop all packages that have RST flag. The reason this needs to be done is because the kernel will send RST responses (resets) to the target when it sees the packets that are being sent with Scapy, since the kernel didn’t initiate this TCP communication. Using this iptables rule, the kernel’s RSTs will not get to the target.\vspace{5mm}
+For the attack to be successful we also need to modify an \texttt{\ttfamily{iptables}} rule that will only apply to the kernel, so it will not interfere with our Scapy application (as this happens in the application layer). This rule will drop all packages that have RST flag. The reason this needs to be done is because the kernel will send RST responses (resets) to the target when it sees the packets that are being sent with Scapy, since the kernel didn’t initiate this TCP communication. Using this iptables rule, the kernel’s RSTs will not get to the target.\vspace{5mm}
+
+The following rule must be introduce on the attacker machines:\vspace{5mm}
+
+\texttt{\ttfamily{iptables –A OUTPUT –p tcp –s <machine's IP address> --tcp-flags RST RST –j DROP}}\vspace{5mm}
 
 \subsection{Virtual machines' deployment}
 As it has been mentioned before, we will create three virtual machines using VirtualBox, two of them will be attackers and the other will perform the victim's role. They will run Ubuntu Server 18.04.3 and the victim will have an apache server running on port 80.\vspace{5mm}
@@ -200,19 +204,19 @@ for s,r in ans:
 
 \vspace{5mm}
 
-Let's take a look at some of the details of the malformed packet: the destination address of the packet is passed as a parameter, it will be the address of the victim server (virtual machine). The source port is randomly generated using the RandShort() function. Lastly, the TCP flags are set to "S", in order to send a SYN packet.\vspace{5mm}
+Let's take a look at some of the details of the malformed packet: the destination address of the packet is passed as a parameter, it will be the address of the victim server (virtual machine). The source port is randomly generated using the \texttt{\ttfamily{RandShort()}} function. Lastly, the TCP flags are set to "S", in order to send a SYN packet.\vspace{5mm}
 
-We will also use the method srloop() which sends a packet and continues to resend it after each response is received. This method returns a tuple of answered and unanswered packets, we will print a summary of those packets, too, so we can see the response of the target server.\vspace{5mm}
+We will also use the method \texttt{\ttfamily{srloop()}} which sends a packet and continues to resend it after each response is received. This method returns a tuple of answered and unanswered packets, we will print a summary of those packets, too, so we can see the response of the target server.\vspace{5mm}
 
 To end, printing the flag of the response packets allows us to check that the target replies are SYN-ACK (SA) responses.\vspace{5mm}
 
-This SA shows that the server “thinks” the ACK from attacker was lost, so it keeps re-sending it. The connection on the target server remains in the SYN\_RECV state for 3 minutes for each port, as per the \href{https://sysctl-explorer.net/net/ipv4/tcp\_synack\_retries/}{net.ipv4.tcp\_synack\_retries} parameter, whose default value is set to 5 in Linux. After these retries, the kernel closes the connection.\vspace{5mm}
+This SA shows that the server “thinks” the ACK from attacker was lost, so it keeps re-sending it. The connection on the target server remains in the SYN\_RECV state for 3 minutes for each port, as per the \texttt{\ttfamily{\href{https://sysctl-explorer.net/net/ipv4/tcp\_synack\_retries/}{net.ipv4.tcp\_synack\_retries}}} parameter, whose default value is set to 5 in Linux. After these retries, the kernel closes the connection.\vspace{5mm}
 
 \section{Demo}
 This demo shows the attacked being performed as it has been described in the prior section.
 
 \section{Conclusion}
-In this report we have approached some of the definitions related to concepts used in a SYN flood attack using Scapy and understood how a Python script to perform said attack works. The conclusions drawn are that this attack is one of most common DoS attacks due to the availabily of the tools that are required. A single security component is unable to properly defend a network which is why many security components must work together to defend a victim. For further reading, there are some proposed methods that can be found in the paper \href{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.206.5378&rep=rep1&type=pdf}{Three Counter Defense Mechanism for TCP SYN Flooding Attacks}. 
+In this report we have approached some of the definitions related to concepts used in a SYN flood attack using Scapy and understood how a Python script to perform said attack works. The conclusions drawn are that this attack is one of most common DoS attacks due to the availabily of the tools that are required. A single security component is unable to properly defend a network which is why many security components must work together to defend a victim. For further reading, there are some proposed methods that can be found in the paper \emph{\href{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.206.5378&rep=rep1&type=pdf}{Three Counter Defense Mechanism for TCP SYN Flooding Attacks}}. 
 
 \section{References and bibliography}
 
