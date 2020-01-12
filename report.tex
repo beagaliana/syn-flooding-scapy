@@ -85,6 +85,13 @@
 	\HRule\\[1.5cm]
 	
 	%------------------------------------------------
+	%	Repository
+	%------------------------------------------------
+	
+	%{\large\textit{Repository}}\\
+	%\url{https://github.com/beagaliana/syn-flooding-scapy}\vspace{6mm}
+	
+	%------------------------------------------------
 	%	Author(s)
 	%------------------------------------------------
 	
@@ -151,7 +158,7 @@ Here is a view of the message flow during a TCP 3-way handshake while performing
 \section{Why using Scapy}
 \href{https://scapy.net}{Scapy} is a powerful interactive packet manipulation tool written in Python that allows us to end, sniff and dissect network packets. It is able to forge or decode packets of a wide number of protocols, send them on the wire, capture them, match requests and replies, among other things. It can easily handle most classical tasks like scanning, tracerouting, probing, unit tests, attacks or network discovery.\vspace{5mm}
 
-\textbf{What's special about Scapy?} It does not interpret, it decodes.\vspace{5mm}
+\textbf{What's special about Scapy?} It does not interpret, it \emph{decodes}.\vspace{5mm}
 
 Machines are good at decoding and can sometimes help humans with that. Interpretation is reserved for human beings. Some programs try to mimic this behavior. For instance they say “this port is open” instead of “I received a SYN-ACK”. Sometimes they are right. Sometimes they are not. It might be easier for beginners, but when you know what you’re doing, you keep on trying to deduce what really happened from the program’s interpretation to make your own, which is hard because you lost a big amount of information.\vspace{5mm}
 
@@ -213,14 +220,15 @@ To end, printing the flag of the response packets allows us to check that the ta
 This SA shows that the server “thinks” the ACK from attacker was lost, so it keeps re-sending it. The connection on the target server remains in the SYN\_RECV state for 3 minutes for each port, as per the \texttt{\ttfamily{\href{https://sysctl-explorer.net/net/ipv4/tcp\_synack\_retries/}{net.ipv4.tcp\_synack\_retries}}} parameter, whose default value is set to 5 in Linux. After these retries, the kernel closes the connection.\vspace{5mm}
 
 \section{Demo}
-This demo shows the attacked being performed as it has been described in the prior section.
+This \href{}{demo} shows the attacked being performed as it has been described in the prior section.
 
 \section{Conclusion}
 In this report we have approached some of the definitions related to concepts used in a SYN flood attack using Scapy and understood how a Python script to perform said attack works. The conclusions drawn are that this attack is one of most common DoS attacks due to the availabily of the tools that are required. A single security component is unable to properly defend a network which is why many security components must work together to defend a victim. For further reading, there are some proposed methods that can be found in the paper \emph{\href{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.206.5378&rep=rep1&type=pdf}{Three Counter Defense Mechanism for TCP SYN Flooding Attacks}}. 
 
+\clearpage
 \section{References and bibliography}
 
-The scripts shown in this report as well as the .tex document used for composed the report can be found at the GitHub repository linked \href{https://github.com/beagaliana/syn-flooding-attack}{here}.\vspace{5mm}
+The scripts shown in this report as well as the .tex document used for composing the report can be found at the GitHub repository linked \href{https://github.com/beagaliana/syn-flooding-attack}{here}.\vspace{5mm}
 
 \url{https://www.owasp.org/index.php/Denial\_of\_Service}\break
 \url{https://resources.sei.cmu.edu/asset\_files/WhitePaper/1996\_019\_001\_496172.pdf#page=123}\break
