@@ -164,7 +164,9 @@ In this report, we will be taking advantage of that freedom Scapy offers to craf
 In order to perform the attack, we will create a Python script which will generate several SYN packets using Scapy. This script will be executed in two VirtualBox machines that will be attackers and will be sent to another VM that will work as our target server.\vspace{5mm}
 
 \subsection{iptables rules}
-For the attack to be successful we also need to modify an iptables rule that will apply to the kernel, so it will not interfere with our Scapy application. This rule will drop all packages that have RST flag. The reason this needs to be done is because the kernel will send RST responses (resets) to the target when it sees the packets that are being sent with Scapy, since the kernel didn’t initiate this TCP communication. Using this iptables rule, the kernel’s RSTs will not get to the target.\vspace{5mm}
+iptables is a Linux native firewall which comes pre-installed with most distributions. It is the userspace command line program used to configure the Linux 2.4.x and later packet filtering ruleset. It is usually targeted towards system administrators.\vspace{5mm}
+
+For the attack to be successful we also need to modify an iptables rule that will only apply to the kernel, so it will not interfere with our Scapy application (as this happens in the application layer). This rule will drop all packages that have RST flag. The reason this needs to be done is because the kernel will send RST responses (resets) to the target when it sees the packets that are being sent with Scapy, since the kernel didn’t initiate this TCP communication. Using this iptables rule, the kernel’s RSTs will not get to the target.\vspace{5mm}
 
 \subsection{Virtual machines' deployment}
 As it has been mentioned before, we will create three virtual machines using VirtualBox, two of them will be attackers and the other will perform the victim's role. They will run Ubuntu Server 18.04.3 and the victim will have an apache server running on port 80.\vspace{5mm}
@@ -213,6 +215,8 @@ ans.make\_table(lambda(s,r): (s.dst, s.dport, r.sprintf("%IP.id% \t %IP.ttl% \t 
 \url{https://scapy.readthedocs.io/en/latest/introduction.html#about-scapy}\break
 \url{https://www.virtualbox.org/manual/ch06.html#network\_hostonly}\break
 \url{https://condor.depaul.edu/glancast/443class/docs/vbox\_host-only\_setup.html}\break
+\url{https://kerneltalks.com/networking/basics-of-iptables-linux-firewall/}\break
+\url{https://www.netfilter.org/projects/iptables/index.html}\break
 
 %----------------------------------------------------------------------------------------
 \printindex
