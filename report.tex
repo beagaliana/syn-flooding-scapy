@@ -208,12 +208,15 @@ To end, printing the flag of the response packets allows us to check that the ta
 
 This SA shows that the server “thinks” the ACK from attacker was lost, so it keeps re-sending it. The connection on the target server remains in the SYN\_RECV state for 3 minutes for each port, as per the \href{https://sysctl-explorer.net/net/ipv4/tcp\_synack\_retries/}{net.ipv4.tcp\_synack\_retries} parameter, whose default value is set to 5 in Linux. After these retries, the kernel closes the connection.\vspace{5mm}
 
+\section{Demo}
+This demo shows the attacked being performed as it has been described in the prior section.
+
 \section{Conclusion}
-
-
-\clearpage
+In this report we have approached some of the definitions related to concepts used in a SYN flood attack using Scapy and understood how a Python script to perform said attack works. The conclusions drawn are that this attack is one of most common DoS attacks due to the availabily of the tools that are required. A single security component is unable to properly defend a network which is why many security components must work together to defend a victim. For further reading, there are some proposed methods that can be found in the paper \href{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.206.5378&rep=rep1&type=pdf}{Three Counter Defense Mechanism for TCP SYN Flooding Attacks}. 
 
 \section{References and bibliography}
+
+The scripts shown in this report as well as the .tex document used for composed the report can be found at the GitHub repository linked \href{https://github.com/beagaliana/syn-flooding-attack}{here}.\vspace{5mm}
 
 \url{https://www.owasp.org/index.php/Denial\_of\_Service}\break
 \url{https://resources.sei.cmu.edu/asset\_files/WhitePaper/1996\_019\_001\_496172.pdf#page=123}\break
