@@ -118,7 +118,7 @@
 
 %----------------------------------------------------------------------------------------
 
-\section{Introduction to DoS attacks and TCP/IP connections}\index{}
+\section{Introduction to DoS attacks and TCP/IP connections}
 Servers have become the target to many attacks. Some of these try to stop, temporarily or indefinitely, legitimate clients from accessing to the resources provided by the server, these kind of attacks are known as denial of service attacks (DoS). Denial of service may be indistinguishable from a heavy, but legitimate, load on the network: users might have difficulties connecting to the web site simply because too many people are trying to connect simutaneously.\vspace{5mm}
 
 The Transmission Control Protocol (TCP) is one of the main protocols of the Internet protocol suite. It complemented the Internet Protocol (IP) in the initial network implementation so that is why the entire suite is commonly referred to as TCP/IP. TCP operates at a higher level than IP (which takes care of lower-level transmissions from host to host using the IP addresses). TCP provides reliable, ordered, and error-checked delivery of a stream of bytes between applications running on hosts that are communicating using an IP network.\vspace{5mm}
@@ -132,7 +132,7 @@ The SYN flooding attack is based in the way the three-way handshake that begins 
 \includegraphics[width=0.5\textwidth]{3wayhandshake.png}\\[1cm]
 \end{center}
 
-\section{SYN Flood attack}\index{}
+\section{SYN Flood attack}
 A SYN flood attack is a form of denial of service attack in which the attacker, by taking advantage of the TCP three-way handshake, sends a succession of SYN requests to a target server attempting to consume enough resources in order to make it unavailable for answering other legitimate petitions.\vspace{5mm}
 
 The attack starts when the client sends a SYN packet to open the connection. Then the target server will reply with an SYN-ACK and waits for the ACK of the client to establish the connection. This ACK will never come: the attacker can either simply not respond with the expected ACK or it could have sent an spoofed IP address that corresponds to a client that does not exist (ergo will never answer with the ACK packet). This will create a number of half-open connections on the target server as the connection is kept open, in a “SYN\_RECV” state, which will eventually consume the target server's resources.\vspace{5mm}
@@ -148,7 +148,7 @@ Here is a view of the message flow during a TCP 3-way handshake while performing
 
 \clearpage
 
-\section{Why using Scapy}\index{}
+\section{Why using Scapy}
 Scapy is a powerful interactive packet manipulation tool written in Python that allows us to end, sniff and dissect network packets. It is able to forge or decode packets of a wide number of protocols, send them on the wire, capture them, match requests and replies, among other things. It can easily handle most classical tasks like scanning, tracerouting, probing, unit tests, attacks or network discovery.\vspace{5mm}
 
 What's special about Scapy? It does not interpret, it decodes.\vspace{5mm}
@@ -160,17 +160,18 @@ Moreover, with most other networking tools, you won’t build something the auth
 In this report, we will be taking advantage of that freedom Scapy offers to craft malformed packets that will be sent to the target server. Since it is written in Python, we will write really simple Python scripts using Scapy as a library to achieve that.
 \clearpage
 
-\section{Implementation details of the attack}\index{}
+\section{Implementation details of the attack}
 In order to perform the attack, we will create a Python script which will generate several SYN packets using Scapy. This script will be executed in two VirtualBox machines that will be attackers and will be sent to another VM that will work as our target server.\vspace{5mm}
 
+\subsection{iptables rules}
 For the attack to be successful we also need to modify an iptables rule that will apply to the kernel, so it will not interfere with our Scapy application. This rule will drop all packages that have RST flag. The reason this needs to be done is because the kernel will send RST responses (resets) to the target when it sees the packets that are being sent with Scapy, since the kernel didn’t initiate this TCP communication. Using this iptables rule, the kernel’s RSTs will not get to the target.\vspace{5mm}
 
-\section{Virtual machines' deployment}\index{}
+\subsection{Virtual machines' deployment}
 As it has been mentioned before, we will create three virtual machines using VirtualBox, two of them will be attackers and the other will perform the victim's role. They will run Ubuntu Server 18.04.3 and the victim will have an apache server running on port 80.\vspace{5mm}
 
 The machines will be connected through the VirtualBox “Hostonly” network adapter. By using this method, VirtualBox creates virtual adapters for connections and doesn't try to use a physical network adapter. This setup requires creating a host-only adapter (if none exists).
 
-\section{Description of the SYN flooding script}\index{}
+\subsection{Description of the SYN flooding script}
 This script is based on the original created by \href{https://github.com/subodhp}{Subodh Pachghare} in which the VM attacker sends malformed SYN connection packets to the target:\vspace{5mm}
 
 \begin{lstlisting}
