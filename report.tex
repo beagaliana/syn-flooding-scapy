@@ -220,6 +220,38 @@ To end, printing the flag of the response packets allows us to check that the ta
 This SA shows that the server “thinks” the ACK from attacker was lost, so it keeps re-sending it. The connection on the target server remains in the SYN\_RECV state for 3 minutes for each port, as per the \texttt{\ttfamily{\href{https://sysctl-explorer.net/net/ipv4/tcp\_synack\_retries/}{net.ipv4.tcp\_synack\_retries}}} parameter, whose default value is set to 5 in Linux. After these retries, the kernel closes the connection.\vspace{5mm}
 
 \section{Demo}
+To execute the attack we need to clone on the attacker machines the GitHub repo in which is contained the Python script that will perform the flood:
+\begin{center}
+	\texttt{\ttfamily{\$ git clone https://github.com/beagaliana/syn-flooding-attack}}
+\end{center}\vspace{5mm}
+
+Now let's access the cloned folder: \texttt{\ttfamily{\$ cd syn-flooding-attack}}\vspace{5mm}
+
+The following step is to install Apache from the Ubuntu repository using the packet manager
+\begin{center}
+	\texttt{\ttfamily{\$ sudo apt-get install apache2}}
+\end{center}\vspace{5mm}
+
+Then we will start it
+\begin{center}
+	\texttt{\ttfamily{\$ sudo systemctl start apache2.service}}
+\end{center}\vspace{5mm}
+
+Let's now make sure Apache is running:
+\begin{center}
+	\texttt{\ttfamily{\$ sudo systemctl status apache2}}
+\end{center}\vspace{5mm}
+
+Once we have done that, as well as introduced the corresponding iptables rules on the attackers, we can proceed to perform the attack by executing the following line on the attackers:
+\begin{center}
+	\texttt{\ttfamily{\$ sudo python syn\_flood.py 192.168.56.101}}
+\end{center}\vspace{5mm}
+
+We can check the connection wait status with the following line:
+\begin{center}
+	\texttt{\ttfamily{\$ netstat -tuna | grep :80}}
+\end{center}\vspace{5mm}
+
 This \href{}{demo} shows the attacked being performed as it has been described in the prior section.
 
 \section{Conclusion}
