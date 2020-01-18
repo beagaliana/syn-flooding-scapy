@@ -20,6 +20,7 @@
 
 \documentclass[11pt]{article}
 
+\usepackage{amsmath}
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{graphicx}
@@ -222,10 +223,10 @@ This SA shows that the server “thinks” the ACK from attacker was lost, so it
 \section{Demo}
 To execute the attack we need to clone on the attacker machines the GitHub repo in which is contained the Python script that will perform the flood:
 \begin{center}
-	\texttt{\ttfamily{\$ git clone https://github.com/beagaliana/syn-flooding-attack}}
+	\texttt{\ttfamily{\$ git clone https://github.com/beagaliana/syn-flooding-scapy}}
 \end{center}\vspace{5mm}
 
-Now let's access the cloned folder: \texttt{\ttfamily{\$ cd syn-flooding-attack}}\vspace{5mm}
+Now let's access the cloned folder: \texttt{\ttfamily{\$ cd syn-flooding-scapy}}\vspace{5mm}
 
 The following step is to install Apache from the Ubuntu repository using the packet manager
 \begin{center}
@@ -252,7 +253,10 @@ We can check the connection wait status with the following line:
 	\texttt{\ttfamily{\$ netstat -tuna | grep :80}}
 \end{center}\vspace{5mm}
 
-This \href{}{demo} shows the attacked being performed as it has been described in the prior section.
+The link below shows the attacked being performed as it has been described in the prior section:
+\begin{center}
+	\texttt{\ttfamily{\url{https://hdvirtual.us.es/discovirt/index.php/s/bEofy8ctYG49zkS}}}
+\end{center}
 
 \section{Conclusion}
 In this report we have approached some of the definitions related to concepts used in a SYN flood attack using Scapy and understood how a Python script to perform said attack works. The conclusions drawn are that this attack is one of most common DoS attacks due to the availabily of the tools that are required. A single security component is unable to properly defend a network which is why many security components must work together to defend a victim. For further reading, there are some proposed methods that can be found in the paper \emph{\href{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.206.5378&rep=rep1&type=pdf}{Three Counter Defense Mechanism for TCP SYN Flooding Attacks}}. 
@@ -263,6 +267,7 @@ In this report we have approached some of the definitions related to concepts us
 The scripts shown in this report as well as the .tex document used for composing the report can be found at the GitHub repository linked \href{https://github.com/beagaliana/syn-flooding-attack}{here}.\vspace{5mm}
 
 \url{https://www.owasp.org/index.php/Denial\_of\_Service}\break
+\url{https://opensourceforu.com/2011/10/syn-flooding-using-scapy-and-prevention-using-iptables}\break
 \url{https://resources.sei.cmu.edu/asset\_files/WhitePaper/1996\_019\_001\_496172.pdf#page=123}\break
 \url{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.206.5378&rep=rep1&type=pdf}\break
 \url{https://en.wikipedia.org/wiki/SYN\_flood}\break
